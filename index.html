@@ -1,0 +1,616 @@
+<title>Watching Water Boil</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#EDF1F5;
+  --surface:#FFFFFF;
+  --surface-2:#F5F8FB;
+  --ink:#16283C;
+  --ink-secondary:#4C6178;
+  --muted:#8CA0B3;
+  --line:#2C5C8C;
+  --grid:#D7E2EC;
+  --accent:#B9762F;
+  --accent-strong:#8F5A22;
+  --accent-tint:#F1E0C9;
+  --weight:#5B6B7A;
+  --liquid:#2a78d6;
+  --liquid-2:#7fb2ea;
+  --vapor:#E7EEF4;
+  --vapor-ink:#9FB6CC;
+  --series-0:#2a78d6;
+  --series-1:#eb6834;
+  --series-2:#1baf7a;
+  --focus:#2C5C8C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0F2A47;
+    --surface:#123453;
+    --surface-2:#163C5E;
+    --ink:#EAF2FA;
+    --ink-secondary:#A9C0D6;
+    --muted:#6E8BA6;
+    --line:#7FC4E8;
+    --grid:#1D4468;
+    --accent:#E0A05C;
+    --accent-strong:#F1C58A;
+    --accent-tint:#3A2E1C;
+    --weight:#9FB6CC;
+    --liquid:#3987e5;
+    --liquid-2:#6aa3e8;
+    --vapor:#1B3652;
+    --vapor-ink:#5F7B96;
+    --series-0:#3987e5;
+    --series-1:#d95926;
+    --series-2:#199e70;
+    --focus:#7FC4E8;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0F2A47;
+  --surface:#123453;
+  --surface-2:#163C5E;
+  --ink:#EAF2FA;
+  --ink-secondary:#A9C0D6;
+  --muted:#6E8BA6;
+  --line:#7FC4E8;
+  --grid:#1D4468;
+  --accent:#E0A05C;
+  --accent-strong:#F1C58A;
+  --accent-tint:#3A2E1C;
+  --weight:#9FB6CC;
+  --liquid:#3987e5;
+  --liquid-2:#6aa3e8;
+  --vapor:#1B3652;
+  --vapor-ink:#5F7B96;
+  --series-0:#3987e5;
+  --series-1:#d95926;
+  --series-2:#199e70;
+  --focus:#7FC4E8;
+}
+
+*{box-sizing:border-box;}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-inline:20px; padding-block:24px 48px; max-width:1180px; margin-inline:auto;
+}
+h1,h2,h3{ font-family:"Barlow Condensed", system-ui, sans-serif; font-weight:700; letter-spacing:.01em; margin:0; text-wrap:balance; }
+.mono{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+.eyebrow{ font-family:"Barlow Condensed", sans-serif; font-weight:600; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-secondary); }
+.nav{ font-size:.82rem; margin-bottom:10px; display:flex; gap:18px; flex-wrap:wrap; }
+.nav a{ color:var(--line); text-decoration:none; font-weight:600; }
+.nav a:hover{ text-decoration:underline; }
+
+header{ display:flex; flex-wrap:wrap; gap:20px; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--line); padding-bottom:18px; margin-bottom:22px; }
+header .heading{ max-width:660px; }
+header h1{ font-size:clamp(1.7rem,3.6vw,2.5rem); color:var(--ink); }
+header p{ margin:.5rem 0 0; color:var(--ink-secondary); font-size:.98rem; max-width:60ch; }
+header p.note{ margin-top:.7rem; padding:.55rem .8rem; background:var(--accent-tint); border-left:3px solid var(--accent); border-radius:4px; color:var(--ink); font-size:.9rem; max-width:60ch; }
+header p.note strong{ color:var(--accent-strong); }
+.side{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; flex:0 0 auto; }
+.credit{ text-align:right; }
+.credit .name{ font-family:"Barlow Condensed", sans-serif; font-weight:700; font-size:clamp(1.3rem,2.6vw,1.85rem); color:var(--ink); letter-spacing:.01em; white-space:nowrap; }
+.credit .sub{ font-size:.78rem; color:var(--accent); font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+.titleblock{ border:1.5px solid var(--line); font-family:"IBM Plex Mono", monospace; font-size:.7rem; color:var(--ink-secondary); flex:0 0 auto; }
+.titleblock .row{ display:grid; grid-template-columns:auto auto; gap:2px 10px; padding:6px 10px; border-bottom:1px solid var(--grid); }
+.titleblock .row:last-child{ border-bottom:none; }
+.titleblock .row b{ color:var(--ink); font-weight:600; }
+
+.controls{
+  display:flex; flex-wrap:wrap; gap:16px 26px; align-items:center;
+  background:var(--surface); border:1px solid var(--grid); border-radius:6px; padding:14px 18px; margin-bottom:22px;
+}
+.presets{ display:flex; gap:8px; flex-wrap:wrap; }
+.preset-btn{
+  font-family:"IBM Plex Mono", monospace; font-size:.82rem; font-weight:600;
+  padding:8px 12px; border-radius:5px; border:1.5px solid var(--grid); background:var(--surface-2); color:var(--ink-secondary);
+  cursor:pointer;
+}
+.preset-btn.active{ border-color:var(--preset-color); color:var(--ink); background:color-mix(in srgb, var(--preset-color) 14%, var(--surface-2)); }
+.preset-btn:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+.scrub-wrap{ display:flex; flex-direction:column; gap:4px; flex:1 1 280px; min-width:220px; }
+.scrub-wrap label{ font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-secondary); font-weight:600; }
+.scrub-zones{ position:relative; height:20px; }
+.scrub-zones .zone{ position:absolute; top:6px; height:8px; border-radius:2px; opacity:.35; }
+.scrub-zones input[type=range]{ position:relative; width:100%; margin:0; accent-color:var(--accent); }
+.zone-labels{ display:flex; font-size:.68rem; color:var(--muted); margin-top:2px; }
+.zone-labels span{ position:absolute; transform:translateX(-50%); }
+.transport{ display:flex; gap:8px; margin-left:auto; }
+button{
+  font-family:"Public Sans", sans-serif; font-weight:600; font-size:.88rem; padding:9px 16px; border-radius:5px;
+  border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer;
+}
+button.primary{ background:var(--accent); border-color:var(--accent-strong); color:#241505; }
+button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+button:hover{ filter:brightness(0.97); }
+
+.layout-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(360px,1fr)); gap:16px; align-items:start; margin-bottom:22px; }
+
+.vessel-panel{ background:var(--surface); border:1px solid var(--grid); border-radius:6px; padding:18px; }
+.vessel-panel h2{ font-size:1.25rem; margin-bottom:2px; }
+.vessel-panel .sub{ color:var(--ink-secondary); font-size:.85rem; margin-bottom:6px; }
+.state-badge{
+  display:inline-block; font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:1rem;
+  padding:4px 12px; border-radius:4px; background:var(--surface-2); color:var(--ink); border:1px solid var(--grid); margin-bottom:14px;
+}
+.vessel-wrap{ display:flex; justify-content:center; }
+.readouts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-top:14px; }
+.readout-tile{ background:var(--surface-2); border:1px solid var(--grid); border-radius:5px; padding:8px 10px; text-align:center; }
+.readout-tile .k{ font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-secondary); }
+.readout-tile .v{ font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:1.05rem; color:var(--ink); margin-top:2px; }
+
+.chart-panel{ background:var(--surface); border:1px solid var(--grid); border-radius:6px; padding:18px; }
+.chart-panel h2{ font-size:1.25rem; margin-bottom:2px; }
+.chart-panel .sub{ color:var(--ink-secondary); font-size:.85rem; margin-bottom:12px; }
+.chart-wrap{ position:relative; }
+#tvchart{ width:100%; height:auto; overflow:visible; }
+.tooltip{
+  position:absolute; pointer-events:none; background:var(--ink); color:var(--bg); font-family:"IBM Plex Mono",monospace;
+  font-size:.72rem; padding:5px 8px; border-radius:4px; transform:translate(-50%,-115%); white-space:nowrap; opacity:0; transition:opacity .1s;
+}
+.legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:.82rem; color:var(--ink-secondary); }
+.legend .item{ display:flex; align-items:center; gap:6px; }
+.legend .swatch{ width:14px; height:3px; border-radius:2px; }
+
+footer{ color:var(--muted); font-size:.78rem; text-align:center; margin-top:8px; }
+@media (max-width:640px){ .titleblock{ display:none; } }
+</style>
+
+<header>
+  <div class="heading">
+    <div class="eyebrow">Pure substance &middot; phase change</div>
+    <h1>Watching water boil, one dot at a time.</h1>
+    <p>Heat a fixed mass of H&#8322;O at constant pressure, held there by a weighted piston. The vessel on the left shows the liquid and vapor in it; the dot on the right traces the same state on the T&ndash;v diagram &mdash; through compressed liquid (<i>l</i>), saturated liquid (<i>f</i>), the two-phase mixture, saturated vapor (<i>g</i>), and superheated vapor (<i>s</i>).</p>
+    <p class="note"><strong>Try it:</strong> pick a pressure below, then drag the heat slider or press Play. The slider's width per phase is scaled by how much heat that phase actually takes &mdash; watch how much of it goes to boiling alone.</p>
+  </div>
+  <div class="side">
+    <div class="credit">
+      <div class="name">Dr. Nuha Aljuneidi</div>
+      <div class="sub">Thermodynamics &middot; ERAU</div>
+    </div>
+    <div class="titleblock" aria-hidden="true">
+      <div class="row"><span>COURSE</span><b>Thermo</b></div>
+      <div class="row"><span>DWG NO.</span><b>CH03&ndash;TV&ndash;01</b></div>
+      <div class="row"><span>SCALE</span><b>NTS</b></div>
+    </div>
+  </div>
+</header>
+
+<section class="controls">
+  <div class="presets" id="presets"></div>
+  <div class="scrub-wrap">
+    <label for="scrub">Heat added</label>
+    <div class="scrub-zones" id="scrubZones">
+      <input type="range" id="scrub" min="0" max="1" step="0.001" value="0">
+    </div>
+  </div>
+  <div class="transport">
+    <button id="playBtn" class="primary" type="button">&#9654; Play</button>
+    <button id="resetBtn" type="button">&#8634; Reset</button>
+  </div>
+</section>
+
+<div class="layout-row">
+  <section class="vessel-panel">
+    <h2>Constant-pressure vessel</h2>
+    <div class="sub">The piston's weight never changes &mdash; that's what holds p fixed while heat goes in.</div>
+    <div class="state-badge" id="stateBadge">&ndash;</div>
+    <div class="vessel-wrap">
+      <svg id="vesselSvg" viewBox="0 0 120 240" width="120" height="240" aria-hidden="true"></svg>
+    </div>
+    <div class="readouts">
+      <div class="readout-tile"><div class="k">T</div><div class="v mono" id="rT">&ndash;</div></div>
+      <div class="readout-tile"><div class="k">v</div><div class="v mono" id="rV">&ndash;</div></div>
+      <div class="readout-tile"><div class="k">quality x</div><div class="v mono" id="rX">&ndash;</div></div>
+      <div class="readout-tile"><div class="k">heat added</div><div class="v mono" id="rQ">&ndash;</div></div>
+    </div>
+  </section>
+
+  <section class="chart-panel">
+    <h2>T&ndash;v diagram</h2>
+    <div class="sub">The dome and all three isobars are always shown; the active one traces solid as you go.</div>
+    <div class="chart-wrap">
+      <svg id="tvchart" viewBox="0 0 620 360" role="img" aria-label="Temperature versus specific volume for water, showing the saturation dome and three isobars"></svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </section>
+</div>
+
+<footer>vf, vg and hfg are approximate saturation values for water &mdash; close to steam-table figures, not a substitute for them. Compressed-liquid and superheated legs use simplified constant-property models for a clear animation, not exact property data.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Approximate saturation dome for H2O (T degC, vf m3/kg, vg m3/kg) ----
+  var DOME = [
+    [0.01, 0.001000, 206.0],
+    [10,   0.001000, 106.3],
+    [25,   0.001003, 43.34],
+    [50,   0.001012, 12.03],
+    [75,   0.001026, 4.129],
+    [100,  0.001044, 1.6729],
+    [125,  0.001065, 0.7702],
+    [150,  0.001091, 0.3928],
+    [175,  0.001121, 0.2168],
+    [200,  0.001157, 0.12736],
+    [225,  0.001199, 0.07849],
+    [250,  0.001251, 0.05013],
+    [275,  0.001317, 0.03276],
+    [300,  0.001404, 0.02167],
+    [325,  0.001528, 0.01390],
+    [350,  0.001741, 0.008803],
+    [360,  0.001895, 0.006950],
+    [370,  0.002213, 0.004925],
+    [374.14, 0.003155, 0.003155]
+  ];
+  var CRIT = DOME[DOME.length - 1];
+
+  var PRESETS = [
+    { key:"p1", label:"P₁ = 1 atm",    P:101.3, Tsat:100.0, vf:0.001044, vg:1.6729,  hfg:2257, colorVar:"--series-0" },
+    { key:"p2", label:"P₂ = 500 kPa",  P:500,   Tsat:151.9, vf:0.001093, vg:0.3749,  hfg:2108, colorVar:"--series-1" },
+    { key:"p3", label:"P₃ = 2000 kPa", P:2000,  Tsat:212.4, vf:0.001177, vg:0.09963, hfg:1890, colorVar:"--series-2" }
+  ];
+
+  var T0 = 20;             // starting temperature, deg C
+  var VLIQ_T0 = 0.001002;  // approx specific volume of liquid water at T0
+  var SUPERHEAT_SPAN = 100; // deg C beyond Tsat for the superheated leg
+  var CP_LIQ = 4.2, CP_VAP = 2.2; // kJ/kg-K, rough constants for pacing only
+
+  var els = {
+    presets: document.getElementById("presets"),
+    scrub: document.getElementById("scrub"),
+    scrubZones: document.getElementById("scrubZones"),
+    playBtn: document.getElementById("playBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    vesselSvg: document.getElementById("vesselSvg"),
+    stateBadge: document.getElementById("stateBadge"),
+    rT: document.getElementById("rT"), rV: document.getElementById("rV"),
+    rX: document.getElementById("rX"), rQ: document.getElementById("rQ"),
+    chart: document.getElementById("tvchart"),
+    tooltip: document.getElementById("tooltip"),
+    legend: document.getElementById("legend")
+  };
+
+  var state = { activeKey: "p1", s: 0, playing: false, lastT: null };
+
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function activePreset(){ return PRESETS.filter(function(p){ return p.key === state.activeKey; })[0]; }
+
+  function legFractions(preset){
+    var q1 = CP_LIQ * (preset.Tsat - T0);
+    var q2 = preset.hfg;
+    var q3 = CP_VAP * SUPERHEAT_SPAN;
+    var total = q1 + q2 + q3;
+    var b1 = q1 / total, b2 = (q1 + q2) / total;
+    return { q1: q1, q2: q2, q3: q3, total: total, b1: b1, b2: b2 };
+  }
+
+  function stateAt(preset, t){
+    var f = legFractions(preset);
+    var T, v, x, phase, heat;
+    if (t <= f.b1){
+      var tt = f.b1 > 0 ? t / f.b1 : 1;
+      T = T0 + (preset.Tsat - T0) * tt;
+      v = VLIQ_T0 + (preset.vf - VLIQ_T0) * tt;
+      x = null; phase = "compressed";
+      heat = f.q1 * tt;
+    } else if (t <= f.b2){
+      var tt2 = (t - f.b1) / (f.b2 - f.b1);
+      T = preset.Tsat;
+      v = preset.vf + (preset.vg - preset.vf) * tt2;
+      x = tt2; phase = "twophase";
+      heat = f.q1 + f.q2 * tt2;
+    } else {
+      var tt3 = (t - f.b2) / (1 - f.b2);
+      T = preset.Tsat + SUPERHEAT_SPAN * tt3;
+      v = preset.vg * ((T + 273.15) / (preset.Tsat + 273.15));
+      x = null; phase = "superheated";
+      heat = f.q1 + f.q2 + f.q3 * tt3;
+    }
+    return { T: T, v: v, x: x, phase: phase, heat: heat, b1: f.b1, b2: f.b2 };
+  }
+
+  function phaseLabel(st){
+    var eps = 0.004;
+    if (st.phase === "compressed"){
+      return Math.abs(st.T - T0) < 0.5 ? "State 1 — Compressed liquid" : "Compressed liquid";
+    }
+    if (st.phase === "twophase"){
+      if (st.x < eps) return "Saturated liquid — state f (x = 0)";
+      if (st.x > 1 - eps) return "Saturated vapor — state g (x = 1)";
+      return "Two-phase mixture (x = " + st.x.toFixed(2) + ")";
+    }
+    return "Superheated vapor — state s";
+  }
+
+  // ---------------- Presets UI ----------------
+  function buildPresets(){
+    els.presets.innerHTML = "";
+    PRESETS.forEach(function(preset){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "preset-btn" + (preset.key === state.activeKey ? " active" : "");
+      btn.style.setProperty("--preset-color", "var(" + preset.colorVar + ")");
+      btn.textContent = preset.label;
+      btn.addEventListener("click", function(){
+        state.activeKey = preset.key;
+        state.playing = false; state.s = 0; els.scrub.value = 0;
+        els.playBtn.innerHTML = "&#9654; Play";
+        buildPresets();
+        renderAll();
+      });
+      els.presets.appendChild(btn);
+    });
+  }
+
+  function renderZones(){
+    var preset = activePreset();
+    var f = legFractions(preset);
+    els.scrubZones.querySelectorAll(".zone").forEach(function(z){ z.remove(); });
+    var zones = [
+      { from: 0, to: f.b1, color: "var(--ink-secondary)" },
+      { from: f.b1, to: f.b2, color: "var(" + preset.colorVar + ")" },
+      { from: f.b2, to: 1, color: "var(--accent)" }
+    ];
+    zones.forEach(function(z){
+      var el = document.createElement("div");
+      el.className = "zone";
+      el.style.left = (z.from * 100) + "%";
+      el.style.width = ((z.to - z.from) * 100) + "%";
+      el.style.background = z.color;
+      els.scrubZones.insertBefore(el, els.scrub);
+    });
+  }
+
+  // ---------------- Vessel ----------------
+  var CYL_TOP = 76, CYL_BOTTOM = 228, CYL_HEIGHT = CYL_BOTTOM - CYL_TOP;
+  var VDOM_MIN = 0.0009, VDOM_MAX = 250;
+
+  function vFrac(v){
+    var lo = Math.log(VDOM_MIN), hi = Math.log(VDOM_MAX);
+    return Math.max(0, Math.min(1, (Math.log(v) - lo) / (hi - lo)));
+  }
+
+  function buildVessel(){
+    els.vesselSvg.innerHTML =
+      '<line x1="10" y1="228" x2="110" y2="228" stroke="var(--muted)" stroke-width="2"/>' +
+      (function(){ var h=""; for(var x=14;x<108;x+=9){ h+='<line x1="'+x+'" y1="228" x2="'+(x-6)+'" y2="236" stroke="var(--muted)" stroke-width="1.4"/>'; } return h; })() +
+      '<rect x="22" y="76" width="76" height="152" rx="3" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>' +
+      '<rect data-vessel="vaporFill" x="25" width="70" fill="var(--vapor)"/>' +
+      '<rect data-vessel="liquidFill" x="25" width="70" fill="var(--liquid)" fill-opacity="0.78"/>' +
+      '<g data-vessel="bubbles"></g>' +
+      '<g data-vessel="wStack"></g>' +
+      '<rect data-vessel="pistonEl" x="24" width="72" height="9" rx="1.5" fill="var(--accent)" stroke="var(--accent-strong)" stroke-width="1"/>';
+  }
+
+  function vesselEl(name){ return els.vesselSvg.querySelector('[data-vessel="' + name + '"]'); }
+
+  function updateVessel(){
+    var preset = activePreset();
+    var st = stateAt(preset, state.s);
+    var frac = vFrac(st.v);
+    var gasHeight = CYL_HEIGHT * (0.18 + 0.80 * frac);
+    var gasY = CYL_BOTTOM - gasHeight;
+
+    var liquidFrac, vaporFrac;
+    if (st.phase === "compressed"){ liquidFrac = 1; vaporFrac = 0; }
+    else if (st.phase === "superheated"){ liquidFrac = 0; vaporFrac = 1; }
+    else {
+      var x = st.x;
+      var vLiq = (1 - x) * preset.vf, vVap = x * preset.vg;
+      var vTot = vLiq + vVap;
+      liquidFrac = vTot > 0 ? vLiq / vTot : 1;
+      vaporFrac = 1 - liquidFrac;
+    }
+
+    var liquidHeight = gasHeight * liquidFrac;
+    var vaporHeight = gasHeight - liquidHeight;
+
+    var vaporEl = vesselEl("vaporFill");
+    vaporEl.setAttribute("y", gasY);
+    vaporEl.setAttribute("height", Math.max(0, vaporHeight));
+
+    var liquidEl = vesselEl("liquidFill");
+    liquidEl.setAttribute("y", CYL_BOTTOM - liquidHeight);
+    liquidEl.setAttribute("height", Math.max(0, liquidHeight));
+
+    var pistonTopY = gasY - 9;
+    vesselEl("pistonEl").setAttribute("y", pistonTopY);
+
+    // static weight stack sized to this preset's pressure, rides with the piston
+    var wStack = vesselEl("wStack");
+    var maxP = PRESETS[PRESETS.length - 1].P;
+    var nBlocks = Math.max(1, Math.round((preset.P / maxP) * 6));
+    var blocks = "";
+    for (var b = 0; b < nBlocks; b++){
+      var by = pistonTopY - 6 - b * 7;
+      blocks += '<rect x="32" y="' + by + '" width="56" height="5" rx="1" fill="var(--weight)"/>';
+    }
+    wStack.innerHTML = blocks;
+
+    // a few simple rising bubbles while boiling, for life
+    var bub = vesselEl("bubbles");
+    if (st.phase === "twophase" && liquidHeight > 6){
+      var bh = "";
+      var seedBase = Math.floor(state.s * 997);
+      for (var i = 0; i < 4; i++){
+        var seed = (seedBase + i * 131) % 100 / 100;
+        var bx = 34 + seed * 52;
+        var by2 = CYL_BOTTOM - 4 - seed * (liquidHeight - 8 > 0 ? liquidHeight - 8 : 0);
+        bh += '<circle cx="' + bx.toFixed(1) + '" cy="' + by2.toFixed(1) + '" r="2" fill="var(--vapor)" fill-opacity="0.9"/>';
+      }
+      bub.innerHTML = bh;
+    } else {
+      bub.innerHTML = "";
+    }
+
+    els.stateBadge.textContent = phaseLabel(st);
+    els.rT.textContent = st.T.toFixed(1) + " °C";
+    els.rV.textContent = st.v < 0.01 ? st.v.toFixed(6) + " m³/kg" : st.v.toFixed(3) + " m³/kg";
+    els.rX.textContent = st.x === null ? "—" : st.x.toFixed(2);
+    els.rQ.textContent = Math.round(st.heat) + " kJ/kg";
+  }
+
+  // ---------------- Chart ----------------
+  var M = { l: 62, r: 18, t: 16, b: 44 }, CW = 620, CHh = 360;
+
+  function chartScales(){
+    var Tmax = CRIT[0] + 40;
+    function x(v){
+      var lo = Math.log10(VDOM_MIN), hi = Math.log10(VDOM_MAX);
+      return M.l + (Math.log10(v) - lo) / (hi - lo) * (CW - M.l - M.r);
+    }
+    function y(T){ return CHh - M.b - (T - 0) / (Tmax - 0) * (CHh - M.t - M.b); }
+    return { x: x, y: y, Tmax: Tmax };
+  }
+
+  function isobarPoints(preset, scales, tMax){
+    var pts = [];
+    var steps = 50;
+    for (var k = 0; k <= steps; k++){
+      var st = stateAt(preset, (k / steps) * tMax);
+      pts.push([scales.x(st.v), scales.y(st.T), st.v, st.T]);
+    }
+    return pts;
+  }
+
+  function renderChart(){
+    var scales = chartScales();
+    var ink = cssVar("--ink-secondary"), grid = cssVar("--grid"), muted = cssVar("--muted");
+    var parts = [];
+
+    // log-v gridlines at decades
+    [0.001, 0.01, 0.1, 1, 10, 100].forEach(function(v){
+      if (v < VDOM_MIN || v > VDOM_MAX) return;
+      var xx = scales.x(v);
+      parts.push('<line x1="' + xx + '" y1="' + M.t + '" x2="' + xx + '" y2="' + (CHh-M.b) + '" stroke="' + grid + '" stroke-width="1"/>');
+      parts.push('<text x="' + xx + '" y="' + (CHh - M.b + 18) + '" text-anchor="middle" font-size="10" font-family="IBM Plex Mono, monospace" fill="' + ink + '">' + v + '</text>');
+    });
+    // T gridlines
+    for (var Tg = 0; Tg <= scales.Tmax; Tg += 50){
+      var yy = scales.y(Tg);
+      parts.push('<line x1="' + M.l + '" y1="' + yy + '" x2="' + (CW-M.r) + '" y2="' + yy + '" stroke="' + grid + '" stroke-width="1"/>');
+      parts.push('<text x="' + (M.l-8) + '" y="' + (yy+4) + '" text-anchor="end" font-size="10" font-family="IBM Plex Mono, monospace" fill="' + ink + '">' + Tg + '</text>');
+    }
+    parts.push('<line x1="' + M.l + '" y1="' + (CHh-M.b) + '" x2="' + (CW-M.r) + '" y2="' + (CHh-M.b) + '" stroke="' + muted + '" stroke-width="1.5"/>');
+    parts.push('<line x1="' + M.l + '" y1="' + M.t + '" x2="' + M.l + '" y2="' + (CHh-M.b) + '" stroke="' + muted + '" stroke-width="1.5"/>');
+    parts.push('<text x="' + ((CW+M.l-M.r)/2) + '" y="' + (CHh-6) + '" text-anchor="middle" font-size="12" fill="' + ink + '" font-family="Public Sans, sans-serif">Specific volume, v (m&#179;/kg, log scale)</text>');
+    parts.push('<text x="16" y="' + ((CHh-M.b+M.t)/2) + '" text-anchor="middle" font-size="12" fill="' + ink + '" font-family="Public Sans, sans-serif" transform="rotate(-90 16 ' + ((CHh-M.b+M.t)/2) + ')">Temperature, T (&deg;C)</text>');
+
+    // saturation dome
+    var fLine = DOME.map(function(d,k){ var p=[scales.x(d[1]), scales.y(d[0])]; return (k===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+    var gLine = DOME.map(function(d,k){ var p=[scales.x(d[2]), scales.y(d[0])]; return (k===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+    parts.push('<path d="' + fLine + '" fill="none" stroke="' + ink + '" stroke-width="1.6"/>');
+    parts.push('<path d="' + gLine + '" fill="none" stroke="' + ink + '" stroke-width="1.6"/>');
+    var cx = scales.x(CRIT[1]), cy = scales.y(CRIT[0]);
+    parts.push('<circle cx="' + cx + '" cy="' + cy + '" r="3.5" fill="' + ink + '"/>');
+    parts.push('<text x="' + (cx-6) + '" y="' + (cy-8) + '" text-anchor="end" font-size="10" font-family="IBM Plex Mono, monospace" fill="' + ink + '">critical pt</text>');
+
+    // isobars: full path thin for all, bold traced for active
+    PRESETS.forEach(function(preset){
+      var color = "var(" + preset.colorVar + ")";
+      var isActive = preset.key === state.activeKey;
+      var full = isobarPoints(preset, scales, 1);
+      var dFull = full.map(function(p,k){ return (k===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+      parts.push('<path d="' + dFull + '" fill="none" stroke="' + color + '" stroke-width="' + (isActive?1.4:1.8) + '" stroke-dasharray="' + (isActive?"4 4":"none") + '" opacity="' + (isActive?0.35:0.85) + '"/>');
+
+      if (isActive){
+        var trav = isobarPoints(preset, scales, state.s);
+        var dTrav = trav.map(function(p,k){ return (k===0?"M":"L")+p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+        parts.push('<path d="' + dTrav + '" fill="none" stroke="' + color + '" stroke-width="3"/>');
+        var last = trav[trav.length-1];
+        parts.push('<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="5" fill="' + color + '" stroke="' + cssVar("--surface") + '" stroke-width="1.5"/>');
+      }
+    });
+
+    els.chart.innerHTML = parts.join("");
+  }
+
+  function renderLegend(){
+    els.legend.innerHTML = PRESETS.map(function(preset){
+      return '<span class="item"><span class="swatch" style="background:var(' + preset.colorVar + ')"></span>' + preset.label + (preset.key===state.activeKey ? " (active)" : "") + '</span>';
+    }).join("");
+  }
+
+  // ---------------- Hover ----------------
+  els.chart.addEventListener("mousemove", function(e){
+    var rect = els.chart.getBoundingClientRect();
+    var scaleX = CW / rect.width, scaleY = CHh / rect.height;
+    var mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+    var scales = chartScales();
+    var best = null, bestDist = Infinity, bestPreset = null;
+    PRESETS.forEach(function(preset){
+      isobarPoints(preset, scales, 1).forEach(function(p){
+        var dist = Math.hypot(p[0]-mx, p[1]-my);
+        if (dist < bestDist){ bestDist = dist; best = p; bestPreset = preset; }
+      });
+    });
+    if (best && bestDist < 24){
+      els.tooltip.style.opacity = "1";
+      els.tooltip.style.left = (best[0] / scaleX) + "px";
+      els.tooltip.style.top = (best[1] / scaleY) + "px";
+      els.tooltip.textContent = bestPreset.label + "  v=" + best[2].toFixed(4) + "  T=" + Math.round(best[3]) + "°C";
+    } else {
+      els.tooltip.style.opacity = "0";
+    }
+  });
+  els.chart.addEventListener("mouseleave", function(){ els.tooltip.style.opacity = "0"; });
+
+  function renderAll(){
+    renderZones();
+    updateVessel();
+    renderChart();
+    renderLegend();
+  }
+
+  // ---------------- Transport ----------------
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var DURATION = 4200;
+
+  function step(t){
+    if (!state.playing) return;
+    if (state.lastT === null) state.lastT = t;
+    var dt = t - state.lastT; state.lastT = t;
+    state.s += dt / DURATION;
+    if (state.s >= 1){ state.s = 1; state.playing = false; els.playBtn.innerHTML = "&#9654; Play"; }
+    els.scrub.value = state.s;
+    updateVessel(); renderChart();
+    if (state.playing) requestAnimationFrame(step);
+  }
+
+  els.playBtn.addEventListener("click", function(){
+    if (state.playing){ state.playing = false; els.playBtn.innerHTML = "&#9654; Play"; return; }
+    if (state.s >= 1) state.s = 0;
+    state.playing = true; state.lastT = null;
+    els.playBtn.innerHTML = "&#10074;&#10074; Pause";
+    if (reduceMotion){
+      state.s = 1; els.scrub.value = 1; updateVessel(); renderChart();
+      state.playing = false; els.playBtn.innerHTML = "&#9654; Play";
+    } else {
+      requestAnimationFrame(step);
+    }
+  });
+  els.resetBtn.addEventListener("click", function(){
+    state.playing = false; state.s = 0; els.scrub.value = 0;
+    els.playBtn.innerHTML = "&#9654; Play";
+    updateVessel(); renderChart();
+  });
+  els.scrub.addEventListener("input", function(){
+    state.playing = false; els.playBtn.innerHTML = "&#9654; Play";
+    state.s = parseFloat(els.scrub.value);
+    updateVessel(); renderChart();
+  });
+
+  buildPresets();
+  buildVessel();
+  renderAll();
+})();
+</script>
